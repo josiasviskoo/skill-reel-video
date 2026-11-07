@@ -6,10 +6,10 @@
 > Os quadros de referência estão em `anexos/` (seção 13). As cores e fontes citadas aqui são os valores
 > **nativos** da referência; a pele (`pele.json`) pode trocá-los pelos papéis.
 
-> **MOTOR EMBUTIDO — use, não reconstrua.** A pasta `modelo/` é o motor exato que produziu a referência aprovada:
+> **MOTOR EMBUTIDO — use, não reconstrua.** A pasta `motor-vsl/` é o motor exato que produziu a referência aprovada:
 > `kit/` (kit `K.*`: layouts, peças, legenda que segue a boca, grade, SFX — intocado), `montar.mjs`, `preparar.sh`,
 > `ferramentas/` e `exemplo/` (o vídeo aprovado inteiro: beats, mapa, fontes, imagens, diário e o vídeo em 540p;
-> remontado, sai idêntico ao original, pixel a pixel). Copie `modelo/` para `<P>/motor` e siga o `modelo/README.md`.
+> remontado, sai idêntico ao original, pixel a pixel). Copie `motor-vsl/` para `<P>/motor` e siga o `motor-vsl/README.md`.
 > **Nunca escreva um motor novo nem edite `kit/`.** Cada vídeo novo escreve só o seu `src/beats.js` (o mapa daquele
 > conteúdo) e ajusta o `vsl.json` (enquadramento medido). Fluxo na seção 10.0.
 
@@ -34,7 +34,7 @@ em cima e o apresentador num card embaixo), com conteúdo verdadeiro na tela e c
 
 ## 1 · O motor em uma página
 
-Este estilo obedece às **regras da casa R1–R11** (`regras-da-casa.md`, na raiz da skill). As que ele tensiona estão
+Este estilo obedece às **regras da casa R1–R11** (`../regras-da-casa.md`, na raiz da skill). As que ele tensiona estão
 marcadas abaixo.
 
 1. **O vídeo é uma conversa que vira interface.** O apresentador nunca some por muito tempo. A câmera alterna
@@ -360,7 +360,7 @@ apresentador nem imagem livre, a imagem é **gerada com o Codex** (`ferramentas/
 - **Onde o estilo põe som:** só nas peças grandes — troca de layout (whoosh), painel (whoosh curto na
   entrada), CTA (pop no clique), carimbo (hit), glitch (boom, só no gancho). Pílulas, cards de grade, passos
   internos de painel e kickers entram **sem som**.
-- **Volume e densidade:** o padrão é `"sfxModo": "enxuto"` (`modelo/sfx-enxuto.js`, decisão de 28/10/2026). Ele
+- **Volume e densidade:** o padrão é `"sfxModo": "enxuto"` (`motor-vsl/sfx-enxuto.js`, decisão de 28/10/2026). Ele
   aplica a R2 sem mexer no kit: ≤ 0,8 efeito/s contando a digitação, como o `verificar.py` conta. No teste com o
   exemplo ficaram 31 efeitos (0,80/s) e a verificação aprovou. A pele ajusta: intensidade 0,3 → enxuto e −3 dB;
   0,6 → enxuto; 0,85 → o som exato da referência (`"referencia"`, ≈ 1,4/s, que reprova o item de SFX do
@@ -369,7 +369,7 @@ apresentador nem imagem livre, a imagem é **gerada com o Codex** (`ferramentas/
 - **Digitação:** no pedido digitando, sample natural a ~9 teclas/s, contínuo sobre o trecho, ≈ 12 dB abaixo
   da voz (R2).
 - **Trilha:** a referência não tem trilha musical; só voz + SFX. Se entrar trilha, fica ≥ 13 LU abaixo da voz.
-- **Fonte dos sons:** `modelo/kit/sfx/` (efeitos procedurais gerados por `modelo/ferramentas/gerar-sfx.mjs`, sem licença de terceiros).
+- **Fonte dos sons:** `motor-vsl/kit/sfx/` (efeitos procedurais gerados por `motor-vsl/ferramentas/gerar-sfx.mjs`, sem licença de terceiros).
 - **Contagem por segundo** conferida no build antes do render (portão 8 da seção 11).
 
 ---
@@ -398,11 +398,11 @@ exemplo do que "agressivo" × "suave" significa).
 ### 10.0 Com o motor embutido (o caminho padrão)
 ```bash
 S=${REEL_SKILL:-~/.claude/skills/reel}; cd <P>
-cp -R "$S/modelo" motor && cd motor
+cp -R "$S/edicao/motor-vsl" motor && cd motor
 bash preparar.sh      # câmera 9:16 (corte/clean-916-grade.mp4) + voz (corte/corte.wav), transcript (preparo/palavras.json),
                       # fontes da pele, material de assets/oficiais, npm install, rastreio da boca, 1ª montagem
 ```
-Depois, a sequência das fases 1 e 2 do `modelo/README.md`:
+Depois, a sequência das fases 1 e 2 do `motor-vsl/README.md`:
 - **Fase 1:** transcript conferido → `vsl.json` medido → material + SOURCES → `assets/map.md` → `src/beats.js` →
   `node montar.mjs` + lint → `../entrega/planta.json` → `node ferramentas/cards.mjs`.
 - **Fase 2:** snapshots → zona segura → render → só-câmera → `ferramentas/audio-final-vsl.sh` → `sons.json` → folha → `verificar.py`.
@@ -423,7 +423,7 @@ critérios.
 ### 10.2 Recorte 9:16
 - **Entra:** `clean.mp4` + `edl.json` (para ler o bruto em resolução cheia quando o bruto é horizontal).
 - **Sai:** `assets/clean.mp4` 1080×1920 com o centro do horizontal recortado, 30 fps, keyframe a cada 1 s e a voz
-  do `corte.wav` (feito por `modelo/preparar.sh`).
+  do `corte.wav` (feito por `motor-vsl/preparar.sh`).
 - **Critério:** rosto inteiro no quadro; o punch base escolhido (1,06) não corta a cabeça nem o queixo.
 
 ### 10.3 Transcrição e correção
@@ -435,7 +435,7 @@ critérios.
 - Formato que o gerador lê: `{"words":[{"text","start","end"}],"audio_duration_secs"}`.
 
 ### 10.4 Rosto
-- **Legenda que segue a boca:** `modelo/ferramentas/rastrear-boca.py` (MediaPipe com `VSL_PYTHON` + `FACE_MODEL`;
+- **Legenda que segue a boca:** `motor-vsl/ferramentas/rastrear-boca.py` (MediaPipe com `VSL_PYTHON` + `FACE_MODEL`;
   sem MediaPipe, OpenCV) gera `assets/face-track.json`, que o kit lê (`K.mouthCaps`). `preparar.sh` já roda; sem
   ele, não há legenda.
 - **Entra:** `clean.mp4` → `ferramentas/rosto.py <video> <pasta>` (medidas para o enquadramento).
@@ -469,14 +469,14 @@ critérios.
 ### 10.8 Composição (motor embutido + `npx hyperframes`)
 - **Entra:** o mapa, os parâmetros de enquadramento (3.1), o transcript.
 - **Sai:** a composição HTML do projeto, com uma chamada de peça por linha do mapa.
-- **Critério:** `npx hyperframes lint` com 0 erros. O motor (`modelo/kit/kit.js`) já cumpre os requisitos
+- **Critério:** `npx hyperframes lint` com 0 erros. O motor (`motor-vsl/kit/kit.js`) já cumpre os requisitos
   abaixo, menos os marcados com ⚑, que são responsabilidade de quem escreve o `beats.js`:
   - toda entrada ancorada a uma frase do transcript; **frase inexistente lança erro** (nunca cai em tempo 0);
   - n-ésima ocorrência e fim de frase disponíveis;
   - ⚑ legenda da boca escondida em toda troca de layout (`K.hideMouth(t − 0.05, t + 0.5)`) e em todo lettering
-    no peito (`K.hideMouth` no intervalo do `K.stack`) — como no `modelo/exemplo/beats-exemplo.js`;
+    no peito (`K.hideMouth` no intervalo do `K.stack`) — como no `motor-vsl/exemplo/beats-exemplo.js`;
   - ⚑ título atrás da cabeça só quando 10.4 liberou; kicker e carimbo no peito (o exemplo os tem no alto da
-    cabeça — ver `modelo/exemplo/LEIA.md`, "o que corrigir");
+    cabeça — ver `motor-vsl/exemplo/LEIA.md`, "o que corrigir");
   - SFX no modo enxuto por padrão (seção 8), que imprime a contagem por segundo no console;
   - punch base lido do `vsl.json` (medido por vídeo), nunca fixo.
   - Lição: um snapshot sem overlay nenhum = âncora quebrada; abra a composição no navegador e leia o console.
@@ -639,20 +639,21 @@ gerador, só com chamadas de peça — uma por linha do mapa.
 
 Ambas as imagens são renders do próprio projeto de referência (nenhum quadro de vídeo de terceiro).
 
-## 14 · Motor, modelo e exemplo (o que está na pasta `modelo/`)
+## 14 · Motor, modelo e exemplo (o que está na pasta `motor-vsl/`)
 
 | Caminho | O que é |
 |---|---|
-| `modelo/README.md` | o passo a passo das fases 1 e 2 com este motor (o que o brief do agente manda seguir) |
-| `modelo/kit/` | o motor da referência aprovada, intocado: `kit.js` (kit `K.*`), `kit.css` (temas e geometria), `index.template.html`, `fonts/`, `sfx/` (efeitos procedurais, sem licença de terceiros). O GSAP 3.14.2 vem do `npm` |
-| `modelo/montar.mjs` | monta `index.html` a partir de `src/beats.js` + transcript + `vsl.json` + rastreio da boca + pele + som; `--so-camera` gera a base só-câmera |
-| `modelo/preparar.sh` | câmera 9:16 com a voz, transcript, fontes e material do projeto, `npm install`, rastreio da boca, 1ª montagem |
-| `modelo/vsl-padrao.json` | o `vsl.json` inicial de todo vídeo novo (cor e grade aprovadas; enquadramento a medir) |
-| `modelo/beats-modelo.js` | o `beats.js` inicial: gramática, regras e receitas comentadas |
-| `modelo/sfx-enxuto.js` | o filtro do modo enxuto (R2) |
-| `modelo/package.json` | `hyperframes` 0.7.109 (a versão da referência), `gsap` 3.14.2, `playwright` |
-| `modelo/ferramentas/` | `rastrear-boca.py`, `cards.mjs` (cards da fase 1), `sons.mjs` (`sons.json`), `audio-final-vsl.sh` (−14 LUFS, pico ≤ −1 dBTP), `folha.sh` (folha do final), `zona-segura-dom.mjs`, `ilustracoes/`, `gerar-sfx.mjs` |
-| `modelo/exemplo/` | o reel aprovado completo (`LEIA.md`, `beats-exemplo.js`, mapa, fontes, imagens, `progresso-exemplo.md`, vídeo em 540p) |
+| `motor-vsl/README.md` | o passo a passo das fases 1 e 2 com este motor (o que o brief do agente manda seguir) |
+| `motor-vsl/kit/` | o motor da referência aprovada, intocado: `kit.js` (kit `K.*`), `kit.css` (temas e geometria), `index.template.html`, `fonts/`, `sfx/` (efeitos procedurais, sem licença de terceiros). O GSAP 3.14.2 vem do `npm` |
+| `motor-vsl/montar.mjs` | monta `index.html` a partir de `src/beats.js` + transcript + `vsl.json` + rastreio da boca + pele + som; `--so-camera` gera a base só-câmera |
+| `motor-vsl/sobrepostos.mjs` | vídeos sobrepostos (B-roll) de `assets/sobrepostos.json` na camada `#broll`, ancorados na fala (fluxo em `EDICAO.md`, passo 3.3a) |
+| `motor-vsl/preparar.sh` | câmera 9:16 com a voz, transcript, fontes e material do projeto, `npm install`, rastreio da boca, 1ª montagem |
+| `motor-vsl/vsl-padrao.json` | o `vsl.json` inicial de todo vídeo novo (cor e grade aprovadas; enquadramento a medir) |
+| `motor-vsl/beats-modelo.js` | o `beats.js` inicial: gramática, regras e receitas comentadas |
+| `motor-vsl/sfx-enxuto.js` | o filtro do modo enxuto (R2) |
+| `motor-vsl/package.json` | `hyperframes` 0.7.109 (a versão da referência), `gsap` 3.14.2, `playwright` |
+| `motor-vsl/ferramentas/` | `rastrear-boca.py`, `cards.mjs` (cards da fase 1), `sons.mjs` (`sons.json`), `audio-final-vsl.sh` (−14 LUFS, pico ≤ −1 dBTP), `folha.sh` (folha do final), `zona-segura-dom.mjs`, `ilustracoes/`, `gerar-sfx.mjs` |
+| `motor-vsl/exemplo/` | o reel aprovado completo (`LEIA.md`, `beats-exemplo.js`, mapa, fontes, imagens, `progresso-exemplo.md`, vídeo em 540p) |
 
 **Teste de fidelidade (28/10/2026):** o exemplo remontado com `montar.mjs` gerou um `index.html` byte a byte igual ao
 da referência. Em 18 quadros comparados, 17 saíram idênticos pixel a pixel e 1 com PSNR de 72 dB.

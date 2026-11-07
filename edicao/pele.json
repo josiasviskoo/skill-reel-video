@@ -48,6 +48,6 @@
   "sfx_modo": {"padrao": "enxuto", "opcoes": ["enxuto", "referencia"], "nota": "enxuto = R2 (≤ 0,8/s com a digitação; aprovado pelo verificar.py); referencia = o som exato do vídeo aprovado (~1,4/s), via vsl.json"},
   "trilha": "nenhuma",
   "precisa": ["rosto", "prints-reais", "boca (rastrear-boca.py)"],
-  "motor_embutido": {"modelo": "modelo/ (copiar para <P>/motor e seguir modelo/README.md)", "kit": "modelo/kit/ (intocado)", "exemplo": "modelo/exemplo/ (referência aprovada, remonta idêntica)"},
+  "motor_embutido": {"modelo": "edicao/motor-vsl/ (copiar para <P>/motor e seguir edicao/motor-vsl/README.md)", "kit": "edicao/motor-vsl/kit/ (intocado)", "exemplo": "edicao/motor-vsl/exemplo/ (referência aprovada, remonta idêntica)"},
   "opcional": ["recorte-do-apresentador"]
 }

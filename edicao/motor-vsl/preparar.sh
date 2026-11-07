@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# preparar.sh — prepara a composição do estilo 03 · VSL dentro da pasta do motor (<P>/motor, a cópia deste modelo/).
+# preparar.sh — prepara a composição do estilo 03 · VSL dentro da pasta do motor (<P>/motor, a cópia de edicao/motor-vsl/).
 # Rode em <P>/motor:   bash preparar.sh
 # Avulso (fora do estúdio):   bash preparar.sh --video clean.mp4 [--palavras cortepalavras.json|palavras.json|transcript.json] [--audio corte.wav]
 #

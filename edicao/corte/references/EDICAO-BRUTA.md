@@ -1,7 +1,7 @@
 # Edição Bruta
 
 **Módulo 1 do pipeline de edição**
-*Versão 1.1 · 27/10/2026 · Status: aprovado em produção · Skill: `~/.claude/skills/reel` (pasta `corte/`)*
+*Versão 1.1 · 27/10/2026 · Status: aprovado em produção · Skill: `~/.claude/skills/reel` (pasta `edicao/corte/`)*
 
 > Este documento é **autossuficiente**. Quem o lê (pessoa ou agente) precisa conseguir cortar um vídeo bruto
 > com a mesma qualidade da v2 aprovada sem ter visto a conversa que o originou. É a referência completa da skill
@@ -160,7 +160,7 @@ Todos os comandos rodam na pasta dos scripts. `PASTA` é uma pasta de trabalho, 
 (ex.: `cortes/2026-11-03-reel-x`, ao lado do bruto). O script cria a pasta se ela não existir.
 
 ```bash
-cd ~/.claude/skills/reel/corte/scripts
+cd ~/.claude/skills/reel/edicao/corte/scripts
 python3 0-checar.py            # só na primeira vez em cada máquina
 ```
 
@@ -256,7 +256,7 @@ Se legendas, cards, zooms ou efeitos já foram cronometrados num corte anterior 
 recronometre à mão**:
 
 ```python
-import os, sys; sys.path.insert(0, os.path.expanduser("~/.claude/skills/reel/corte/scripts"))
+import os, sys; sys.path.insert(0, os.path.expanduser("~/.claude/skills/reel/edicao/corte/scripts"))
 from remapear import Mapa
 m = Mapa("corte-antigo/cortepalavras.json", "corte-novo/cortepalavras.json")
 m.novo(2.73)    # tempo antigo → novo  (2.62 na v2)
@@ -621,7 +621,7 @@ Usar só se pedirem:
 ## 15 · Arquivos
 
 ```
-~/.claude/skills/reel/corte/
+~/.claude/skills/reel/edicao/corte/
 ├── CORTE.md                        o roteiro curto que o agente segue (fluxo, regras, aceite, entrega)
 ├── references/
 │   └── EDICAO-BRUTA.md             ← este documento (o porquê de tudo)

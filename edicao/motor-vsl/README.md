@@ -12,6 +12,7 @@ na pasta do projeto); sem ela, cores, fontes e som são os da referência: nunca
 | `kit/kit.js` · `kit/kit.css` | o motor: câmeras FULL/SPLIT/PIP com troca animada, punch, grade, peças (`K.stack`, `K.pill`, `K.panel`, `K.grid`, `K.prompt`, `K.fan`, `K.stamp`, `K.cta`…), legenda que segue a boca (`K.mouthCaps`), efeitos sonoros e âncoras na fala (`K.at`, que dá erro se a frase não existir). **Não edite** |
 | `kit/index.template.html` · `kit/fonts/` · `kit/sfx/` | a página, as fontes nativas (Anybody, Plus Jakarta Sans, JetBrains Mono) e os efeitos procedurais (sem licença de terceiros) |
 | `montar.mjs` | monta `index.html` = template + `src/beats.js` + transcript + `vsl.json` + boca + pele + som. `--so-camera` gera a versão só com a câmera |
+| `sobrepostos.mjs` | os vídeos sobrepostos (B-roll da própria pessoa): lê `assets/sobrepostos.json`, recorta cada trecho com ffmpeg e põe na camada `#broll`, ancorado na fala (`em`/`ate` = frases, como `K.at`). Sem o arquivo, nada muda (o exemplo continua idêntico) |
 | `preparar.sh` | câmera 9:16 com a voz (`assets/clean.mp4`), transcript no formato do kit, fontes e material do projeto, `npm install`, rastreio da boca e a 1ª montagem |
 | `vsl-padrao.json` | o `vsl.json` inicial: a cor e a grade aprovadas (fixas, R4) e o enquadramento a medir (`punch`, `face`, `head`, `fullPos`, `splitPos`) |
 | `beats-modelo.js` | o `src/beats.js` inicial: a gramática fala → câmera → peça e as regras, com receitas comentadas |
@@ -36,14 +37,15 @@ outro vídeo, o `K.at` dá erro na primeira frase que não existe, e isso já pr
 ## Como produzir com ele (fase 1 e fase 2 do brief)
 ```bash
 P=<pasta do projeto>; S=${REEL_SKILL:-~/.claude/skills/reel}; cd "$P"
-cp -R "$S/modelo" motor && cd motor
+cp -R "$S/edicao/motor-vsl" motor && cd motor
 bash preparar.sh                       # câmera 9:16 + voz, transcript, fontes/material, npm install, boca, 1ª montagem
 # ---------- fase 1 · planta ----------
 # 1. confira assets/transcript.json (nomes como a marca escreve, palavra-código do CTA em caixa alta — R6)
 # 2. meça num quadro de assets/clean.mp4, com o punch aplicado: face {x,y,w,h}, head {x,y}, punch, fullPos, splitPos → vsl.json
 #    (cor, grade e tinta NÃO mudam). Topo da cabeça alto (< ~300 px livres acima)? Nada no alto no FULL: tudo no peito (R1).
 # 3. material real em assets/img/ e ../assets/SOURCES.md (prints e logos oficiais; tela sem print → ferramentas/ilustracoes/;
-#    cena/conceito sem material nenhum → imagem gerada: bash $S/ferramentas/gerar-imagem.sh assets/img/gen-01-x.jpg 1080x600 "<prompt>")
+#    cena/conceito sem material nenhum → imagem gerada: bash $S/edicao/ferramentas/gerar-imagem.sh assets/img/gen-01-x.jpg 1080x600 "<prompt>")
+#    vídeos sobrepostos da pessoa (../brutos/sobrepostos/) → assets/sobrepostos.json (formato no topo de sobrepostos.mjs)
 # 4. assets/map.md (formato: exemplo/mapa.md) → src/beats.js (leia exemplo/beats-exemplo.js inteiro antes)
 node montar.mjs && npx hyperframes lint                       # 0 erros; snapshot vazio = âncora quebrada (veja o console)
 # 5. escreva ../entrega/planta.json (n, layout FULL|SPLIT, de, ate, fala, tela) — uma tela por linha do mapa
@@ -56,8 +58,8 @@ node montar.mjs --so-camera && npx hyperframes render -q high -o ../render/_came
 bash ferramentas/audio-final-vsl.sh ../render/_reel-bruto.mp4 ../render/reel-vN.mp4   # −14 LUFS ±0,3, pico ≤ −1 dBTP
 node ferramentas/sons.mjs                                             # ../sons.json
 bash ferramentas/folha.sh ../render/reel-vN.mp4 ../qa/folha-final.png
-python3 "$S/ferramentas/verificar.py" .. --video render/reel-vN.mp4 --sfx ../sons.json --camera ../render/_camera-so.mp4
-#   (S = a raiz da skill reel; o verificar.py escreve ../VERIFY.md e roda a zona segura → ../qa/zona-segura.png; --sfx e --camera são relativos a esta pasta)
+python3 "$S/edicao/ferramentas/verificar.py" .. --video render/reel-vN.mp4 --sfx ../sons.json --camera ../render/_camera-so.mp4
+#   (S = a raiz da skill reel; as ferramentas comuns ficam em $S/edicao/ferramentas; o verificar.py escreve ../VERIFY.md e roda a zona segura → ../qa/zona-segura.png; --sfx e --camera são relativos a esta pasta)
 # MINUTAGEM.md (o mapa com os tempos finais) e progresso.md na pasta do projeto, como no exemplo/progresso-exemplo.md
 ```
 

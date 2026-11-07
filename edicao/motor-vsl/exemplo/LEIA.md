@@ -26,7 +26,7 @@ pixel a pixel.
 | `img/` | logos oficiais (Wikimedia Commons) e as telas ilustrativas (empresa fictícia "Padaria Trigo & Mel") |
 
 ## Remontar o exemplo (teste do motor)
-Na pasta do motor do projeto (`<P>/motor`, a cópia do `modelo/`), depois do `preparar.sh` com o vídeo do exemplo:
+Na pasta do motor do projeto (`<P>/motor`, a cópia de `edicao/motor-vsl/`), depois do `preparar.sh` com o vídeo do exemplo:
 ```bash
 cp exemplo/beats-exemplo.js src/beats.js && cp exemplo/vsl.json . && cp exemplo/img/* assets/img/
 cp exemplo/transcript.json exemplo/face-track.json assets/

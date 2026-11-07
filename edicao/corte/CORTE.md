@@ -1,6 +1,6 @@
 
 # Motor de corte · módulo 1 (a decupagem)
-*Roteiro curto do motor de corte da skill `reel` (pasta `corte/`). Idêntico ao motor aprovado em produção em out/2026; o documento completo é `references/EDICAO-BRUTA.md`.*
+*Roteiro curto do motor de corte da skill `reel` (pasta `edicao/corte/`). Idêntico ao motor aprovado em produção em out/2026; o documento completo é `references/EDICAO-BRUTA.md`.*
 
 **A regra em uma frase:** *você decide o que fica lendo; o som decide onde cortar.* A escolha das tomadas é
 editorial, feita sobre o texto real de cada trecho. O ponto exato do corte é medido no áudio, nunca no tempo
@@ -13,7 +13,7 @@ de aceite) antes do primeiro corte da sessão. O caso aprovado está em `exemplo
 
 ## Fluxo
 
-`S=~/.claude/skills/reel/corte/scripts` · `PASTA` = uma pasta de trabalho por vídeo, criada ao lado do
+`S=~/.claude/skills/reel/edicao/corte/scripts` · `PASTA` = uma pasta de trabalho por vídeo, criada ao lado do
 bruto (ex.: `<pasta do bruto>/corte-<data>`). No Windows, rode com `PYTHONUTF8=1` e use `python` no lugar de
 `python3`.
 

@@ -1,6 +1,6 @@
 # Regras da casa — valem para TODOS os estilos
 
-*Lições de produção real. Todo estilo obedece a este bloco. Quando uma regra daqui conflitar com a
+*Lições de produção real. Valem para a edição (`edicao/`) e para o que o roteiro (`roteiro/`) pede que seja filmado. Todo estilo obedece a este bloco. Quando uma regra daqui conflitar com a
 regra de um estilo, **vale esta**.*
 
 ## R1 · O rosto nunca é coberto
@@ -14,7 +14,7 @@ ordem de preferência:
 3. **Cena de fundo própria:** uma tela sem o apresentador, com os elementos distribuídos.
 
 Títulos "atrás da cabeça" (com recorte do apresentador) só quando sobra espaço acima da cabeça: meça
-o topo da cabeça (`ferramentas/rosto.py`). Com menos de ~300 px livres, troque por lettering no
+o topo da cabeça (`edicao/ferramentas/rosto.py`). Com menos de ~300 px livres, troque por lettering no
 peito. Todo snapshot é conferido para esta regra; um quadro com algo sobre o rosto é reprovado.
 
 ## R2 · Efeitos sonoros com parcimônia
@@ -25,7 +25,7 @@ No máximo **~0,85 SFX por segundo** (um reel de 40 s tem ~34, não 45).
 - Volumes baixos (0,1–0,2 do volume da voz).
 - Digitação: sample natural, ritmo humano (~9 teclas/s), contínua sobre o trecho inteiro, nunca
   rajada sintética; ≈ 12 dB abaixo da voz.
-- Sons gerados localmente, sem licença envolvida (`ferramentas/sfx.sh`):
+- Sons gerados localmente, sem licença envolvida (os do kit ficam em `edicao/motor-vsl/kit/sfx/`, gerados por `edicao/motor-vsl/ferramentas/gerar-sfx.mjs`; receitas avulsas em ffmpeg):
   - whoosh: `ffmpeg -f lavfi -i "anoisesrc=color=pink:d=0.55" -af "highpass=f=300,lowpass=f=5500,afade=t=in:d=0.28,afade=t=out:st=0.3:d=0.25" whoosh.wav`;
   - hit: seno de 52 Hz com decaimento de 0,6 s;
   - pop: 1,25 kHz por 90 ms;
@@ -36,7 +36,7 @@ No máximo **~0,85 SFX por segundo** (um reel de 40 s tem ~34, não 45).
 - Todo número na tela tem fonte (preço oficial, plano, período).
 - **Prioridade de imagem:** 1. print/logo oficial; 2. Wikimedia Commons / Openverse com licença;
   3. arquivos do próprio apresentador; 4. **ilustração declarada**: HTML próprio, empresa fictícia,
-  rotulada como ilustração; 5. **imagem gerada pelo Codex** (`ferramentas/gerar-imagem.sh`) para cena,
+  rotulada como ilustração; 5. **imagem gerada pelo Codex** (`edicao/ferramentas/gerar-imagem.sh`) para cena,
   conceito ou ambiente que a fala pede e que não tem material — sem texto, sem logo, sem pessoa real.
 - Imagem gerada **ilustra, nunca prova**: não serve para logo, print de produto, número, resultado,
   depoimento ou rosto real. Vai para `SOURCES.md` como "imagem gerada (Codex)", com prompt e data.
@@ -61,7 +61,7 @@ aprovado do `vsl.json`; qualquer grade a mais respeita este teto.
 - Palavra comida → proteger o trecho (manter o intervalo do bruto inteiro) e cortar de novo.
 - Nunca misture tempos do bruto com os do vídeo limpo. Depois de qualquer recorte, retranscreva e
   remapeie tudo o que dependia dos tempos.
-- O corte é do motor de corte (`corte/`); o estilo recebe o vídeo já limpo (`clean.mp4`).
+- O corte é do motor de corte (`edicao/corte/`); o estilo recebe o vídeo já limpo (`clean.mp4`).
 
 ## R6 · Legenda com o texto certo
 - Corrija o transcript à mão antes de montar. Erros típicos da transcrição neste nicho:
@@ -85,7 +85,7 @@ aprovado do `vsl.json`; qualquer grade a mais respeita este teto.
   (x > 940 e y > 1150).
 - **Anúncio:** x 65–1015, y 270–1248.
 - Fundos e decoração podem sangrar.
-- Confira com `ferramentas/zona-segura.py` (varredura a cada 0,25 s).
+- Confira com `edicao/ferramentas/zona-segura.py` (varredura a cada 0,25 s).
 
 ## R8 · Áudio final
 - Integrado **−14 LUFS (±0,5)**, pico ≤ −0,5 dBFS, sem recodificar a imagem (`-c:v copy`).

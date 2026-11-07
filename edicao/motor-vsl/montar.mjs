@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Monta index.html do estilo 03 · VSL com o kit da referência aprovada (kit/, intocado).
-// Rode na pasta do motor do projeto (<P>/motor, a cópia deste modelo/ com vsl.json, src/ e assets/):
+// Rode na pasta do motor do projeto (<P>/motor, a cópia de edicao/motor-vsl/ com vsl.json, src/ e assets/):
 //   node montar.mjs                 composição completa
 //   node montar.mjs --so-camera     só a câmera nos mesmos layouts e tempos (base da zona segura: render/_camera-so.mp4);
 //                                   rode de novo sem a opção depois do render
@@ -10,6 +10,7 @@
 // - lê assets/transcript.json ({"words":[{"text","start","end"}],"audio_duration_secs"}) + assets/caption-fixes.json;
 // - liga a legenda que segue a boca se existir assets/face-track.json (ferramentas/rastrear-boca.py);
 // - liga o recorte do apresentador se existir assets/matte.webm;
+// - põe os vídeos sobrepostos (B-roll) de assets/sobrepostos.json na camada #broll (sobrepostos.mjs; sem o arquivo, nada muda);
 // - aplica a PELE (pele-resolvida.json aqui ou na pasta-mãe): cores → variáveis do kit (assets/pele.css),
 //   fontes → assets/fonts/fontes.css; com origem "nativa" nada muda e o resultado é o da referência;
 // - aplica o SOM: padrão do vsl.json = "enxuto" (R2); pele com efeitos desligados → nenhum; intensidade 0,3 → enxuto
@@ -18,6 +19,7 @@
 import { readFileSync, writeFileSync, existsSync, cpSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { sobrepostos } from "./sobrepostos.mjs";
 
 const MOD = dirname(fileURLToPath(import.meta.url));
 const M = join(MOD, "kit");
@@ -110,12 +112,16 @@ if (cfg.music && existsSync(join("assets", cfg.music.file))) {
   music = `<audio id="music" src="assets/${cfg.music.file}" data-start="${s}" data-duration="${(dur - s).toFixed(3)}" data-track-index="3" data-volume="${cfg.music.volume ?? 0.18}"></audio>`;
 }
 
+// ---------------- sobrepostos (B-roll) ----------------
+const br = sobrepostos(words, dur);
+
 // ---------------- index.html ----------------
-const beats = readFileSync("src/beats.js", "utf8");
+const beats = readFileSync("src/beats.js", "utf8") + (br ? br.js : "");
 let html = readFileSync("src/index.template.html", "utf8")
   .replaceAll("__DUR__", String(dur)).replace("__CFG__", JSON.stringify(cfg)).replace("__WORDS__", JSON.stringify(words)).replace("__FACE__", JSON.stringify(face))
   .replace("__CLASS__", `t-${cfg.theme || "roxo"} f-${cfg.font || "padrao"}`)
   .replace("__MATTE__", matte).replace("__MUSIC__", music).replace("__BEATS__", beats + (sfxFiltro ? "\n" + sfxFiltro : ""));
+if (br) html = html.replace('<div id="cover"', br.html + '<div id="cover"');
 if (peleCss) html = html.replace('<link rel="stylesheet" href="assets/kit.css">', `<link rel="stylesheet" href="assets/kit.css">\n${fontesLink}<link rel="stylesheet" href="assets/pele.css">`);
 if (SO_CAMERA) html = html.replace("</head>", `<style>#ui,#cap,#fx,#behind,#inset,#cover,#under{display:none!important}</style>\n</head>`);
 writeFileSync("index.html", html);
@@ -123,4 +129,4 @@ const meta = read("meta.json", {});
 Object.assign(meta, { id: "vsl", width: 1080, height: 1920, fps: 30 });
 writeFileSync("meta.json", JSON.stringify(meta, null, 2));
 if (!existsSync("hyperframes.json")) cpSync(join(MOD, "hyperframes.json"), "hyperframes.json");
-console.log(`index.html ok${SO_CAMERA ? " (SÓ CÂMERA — rode de novo sem --so-camera depois do render)" : ""} — ${dur}s · ${words.length} palavras · boca: ${face ? "sim" : "NÃO (rode ferramentas/rastrear-boca.py)"} · matte: ${matte.startsWith("<div") ? "sim" : "não"} · música: ${music ? "sim" : "não"} · pele: ${peleNota} · sfx: ${sfxNota}`);
+console.log(`index.html ok${SO_CAMERA ? " (SÓ CÂMERA — rode de novo sem --so-camera depois do render)" : ""} — ${dur}s · ${words.length} palavras · boca: ${face ? "sim" : "NÃO (rode ferramentas/rastrear-boca.py)"} · matte: ${matte.startsWith("<div") ? "sim" : "não"} · música: ${music ? "sim" : "não"} · sobrepostos: ${br ? br.nota : "não"} · pele: ${peleNota} · sfx: ${sfxNota}`);

@@ -4,7 +4,7 @@
 #
 # Uso:
 #   bash gerar-imagem.sh <saida.jpg|png> <LxA> "<prompt em inglês>"
-#   ex.: bash $S/ferramentas/gerar-imagem.sh assets/img/gen-01-cafe.jpg 1080x1350 \
+#   ex.: bash $S/edicao/ferramentas/gerar-imagem.sh assets/img/gen-01-cafe.jpg 1080x1350 \
 #          "Close-up photo of a barista pouring latte art, warm morning light, shallow depth of field"
 #
 # O que faz: chama `codex exec` com o recurso image_generation ligado, pega o PNG que o Codex

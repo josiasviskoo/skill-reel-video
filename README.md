@@ -1,56 +1,63 @@
-# skill reel
+# skill reel · roteiro + corte + edição
 
-Skill de Claude Code que **corta e edita um reel** (9:16) a partir da gravação bruta de alguém falando, sem
-painel e sem escolhas: manda o vídeo, ela corta e edita.
+Skill de Claude Code para quem grava a si mesmo falando e quer **reels orgânicos ou anúncios** 9:16 prontos.
+Três modos, uma pasta de projeto por vídeo:
 
-- **Corte**: tira silêncios, respirações, "éé", gaguejos, erros, retomadas e repetições. Corte pelo som (volume +
-  timbre, calibrado pelo nível da gravação), bordas no vale de energia, cortes J/L e conferência de cada emenda
-  por transcrição. É o motor de corte aprovado em produção (out/2026), copiado intacto.
-- **Edição**: o motor **VSL com interface animada** — a câmera alterna tela cheia com punch-in e tela dividida com
-  o apresentador num card; cada palavra-chave falada vira uma peça de interface que entra exatamente na palavra;
-  legenda que segue a boca; efeitos sonoros enxutos; áudio a −14 LUFS. É o mesmo kit (intocado) e as mesmas
-  regras que produziram o reel de referência aprovado; remontado, o exemplo sai idêntico pixel a pixel.
-
-Entrega `render/reel-v1.mp4` verificado (`VERIFY.md`, folha de quadros, zona segura, LUFS) e itera a pedido.
+| Modo | O que faz |
+|---|---|
+| **ROTEIRO** (`roteiro/`) | cria o roteiro com o template validado **"Espelho Local"**, engenharia reversa de um anúncio vencedor: briefing, roteiro cronometrado em 8 blocos, teleprompter, shot list (fala · sobrepostos · fotos), variações de hook e checklist com anticontaminação e compliance |
+| **EDIÇÃO** (`edicao/`) | **corta** a fala bruta (silêncios, respirações, "éé", gaguejos, retomadas, com conferência de cada emenda) e **edita** no motor **VSL com interface animada**: FULL com punch-in ↔ SPLIT, cada palavra-chave vira uma peça que entra na palavra, legenda que segue a boca, **vídeos sobrepostos (B-roll) ancorados na fala**, SFX enxutos, −14 LUFS. Entrega `render/reel-v1.mp4` verificado e itera a pedido |
+| **COMPLETO** | roteiro → a pessoa grava → edição, tudo na mesma pasta, com o mapa bloco a bloco de `roteiro/framework/08-do-roteiro-a-edicao.md` |
 
 ## Instalar
 ```bash
 git clone https://github.com/josiasviskoo/skill-reel-video.git ~/.claude/skills/reel
 ```
-Depois, no Claude Code, é só mandar o vídeo e pedir "edita esse reel" (ou `/reel`).
+No Claude Code: "cria um roteiro de anúncio para…", "edita esse reel" (passando os vídeos) ou `/reel`.
 
-## O que a máquina precisa
+## Como organizar as gravações
+```bash
+bash ~/.claude/skills/reel/novo-projeto.sh meu-video      # cria meu-video/ com a estrutura abaixo
+```
+```
+meu-video/
+├── roteiro/               roteiro.md · texto-de-gravacao.md · shot-list.md · checklist.md
+├── brutos/
+│   ├── fala/              você falando para a câmera (uma ou várias partes: 01-…, 02-…)
+│   ├── sobrepostos/       B-roll que cobre a fala (mãos, equipamento, ambiente, tela)
+│   └── fotos/             casos reais, antes/depois, prints, logos
+├── corte/ preparo/ motor/ assets/      trabalho da skill
+└── render/ qa/ entrega/                reel-v1.mp4, verificação, cards
+```
+Os sobrepostos entram por `motor/assets/sobrepostos.json`, cada um ancorado na frase que ilustra
+(`"em": "frase exata"`), em tela cheia (`"full"`) ou na metade de cima do SPLIT (`"topo"`).
+
+## Estrutura do repositório
+```
+SKILL.md              porta de entrada: escolhe o modo
+regras-da-casa.md     R1–R11 (rosto nunca coberto, SFX com parcimônia, material real, nenhuma palavra comida, −14 LUFS…)
+novo-projeto.sh       cria a pasta de um vídeo
+roteiro/              ROTEIRO.md · briefing/ · framework/ (01–08) · scripts/ · referencia-vencedor/ (só estudo)
+edicao/               EDICAO.md · ESTILO.md · pele.json
+  corte/              motor de corte: CORTE.md · references/EDICAO-BRUTA.md · scripts/ · exemplo/ (gabarito aprovado)
+  motor-vsl/          motor VSL: kit/ (intocado) · montar.mjs · sobrepostos.mjs · preparar.sh · ferramentas/ · exemplo/
+  ferramentas/        juntar-falas.sh · preparar.py · rosto.py · ancoras.py · verificar.py · zona-segura.py · recortar.py
+                      audio-final.sh · gerar-imagem.sh
+  anexos/             quadros da referência e o antes × depois da cor
+```
+
+## O que a máquina precisa (só para o modo EDIÇÃO)
 | Para | Ferramenta |
 |---|---|
 | corte e transcrição | `ffmpeg`, `whisper-cli` (whisper.cpp) + modelo `ggml-large-v3-turbo.bin` em `~/.cache/whisper-cpp/` (ou `WHISPER_MODEL`), Python 3 com `numpy` |
-| enquadramento, zona segura, legenda que segue a boca | `opencv-python-headless` (e, se quiser o rastreio fino, `mediapipe` num Python apontado por `VSL_PYTHON`) |
+| enquadramento, zona segura, legenda que segue a boca | `opencv-python-headless` (e, para o rastreio fino, `mediapipe` num Python apontado por `VSL_PYTHON`) |
 | imagens para trechos sem material (opcional) | Codex CLI logado (`npm i -g @openai/codex && codex login`), com o recurso `image_generation` |
 | composição e render | Node 20+ (o `preparar.sh` instala `hyperframes` 0.7.109, `gsap` 3.14.2 e `playwright`), Google Chrome (ou `CHROME=<executável>`) |
 
-`python3 corte/scripts/0-checar.py` diz o que falta e como instalar. Mac: `brew install ffmpeg whisper-cpp`.
-
-## Como funciona (o fluxo que o `SKILL.md` segue)
-1. **Corte** (`corte/`): mapa de tomadas pela energia → escolha editorial dos *keeps* → transcrição que não esconde
-   vícios → motor de corte → conferência (texto, repetições, emendas, pausas). Sai `clean.mp4` + `cortepalavras.json`.
-2. **Motor VSL** (`modelo/`): `preparar.sh` (câmera 9:16 com a voz, transcript, rastreio da boca) → transcript
-   corrigido → enquadramento medido (`vsl.json`) → material real com fontes (`SOURCES.md`; sem material, imagem
-   gerada pelo Codex com `ferramentas/gerar-imagem.sh`) → mapa de beats →
-   `src/beats.js` (só chamadas `K.*` ancoradas na fala) → lint → snapshots → zona segura → render → áudio final →
-   `verificar.py` → `reel-v1.mp4`.
-
-## Estrutura
-```
-SKILL.md              o fluxo que o Claude segue
-regras-da-casa.md     R1–R11 (rosto nunca coberto, SFX com parcimônia, material real, nenhuma palavra comida, −14 LUFS…)
-ESTILO.md             a especificação do motor VSL (layouts, movimento, legenda, peças, som, aceite, lições de produção)
-pele.json             valores nativos (fontes, cores, invariantes)
-corte/                motor de corte: CORTE.md · references/EDICAO-BRUTA.md · scripts/ · exemplo/ (gabarito aprovado)
-modelo/               motor VSL: kit/ · montar.mjs · preparar.sh · ferramentas/ · exemplo/ (o reel aprovado inteiro)
-ferramentas/          preparar.py · rosto.py · ancoras.py · verificar.py · zona-segura.py · recortar.py · audio-final.sh · gerar-imagem.sh
-anexos/               quadros da referência e o antes × depois da cor
-```
+`python3 edicao/corte/scripts/0-checar.py` diz o que falta e como instalar. Mac: `brew install ffmpeg whisper-cpp`.
 
 ## Licenças do material embutido
-Fontes Anybody, Plus Jakarta Sans e JetBrains Mono sob OFL (arquivos `OFL-*.txt` em `modelo/kit/fonts/`); os efeitos
-sonoros de `modelo/kit/sfx/` são procedurais (gerados por `modelo/ferramentas/gerar-sfx.mjs`); GSAP e HyperFrames vêm
-pelo `npm`. Os logos do exemplo vêm do Wikimedia Commons e estão listados em `modelo/exemplo/SOURCES.md`.
+Fontes Anybody, Plus Jakarta Sans e JetBrains Mono sob OFL (arquivos `OFL-*.txt` em `edicao/motor-vsl/kit/fonts/`); os
+efeitos sonoros de `edicao/motor-vsl/kit/sfx/` são procedurais (gerados por `edicao/motor-vsl/ferramentas/gerar-sfx.mjs`);
+GSAP e HyperFrames vêm pelo `npm`. Os logos do exemplo vêm do Wikimedia Commons e estão listados em
+`edicao/motor-vsl/exemplo/SOURCES.md`. O material de `roteiro/referencia-vencedor/` é só para estudo do template.
